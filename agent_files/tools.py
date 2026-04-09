@@ -22,14 +22,17 @@ def search_web(query: str, max_results: int = 5) -> str:
     ]
     return json.dumps(cleaned, ensure_ascii=False, indent=2)
  
- 
 @tool
 def extract_url(url: str) -> str:
     """Fetch and extract page content as markdown-like text."""
-    data = DDGS().extract(url, fmt="text_markdown")
-    content = data.get("content", "")
-    return content[:6000]
- 
+    try:
+        data = DDGS().extract(url, fmt="text_markdown")
+        content = data.get("content", "")
+        if not content:
+            return "No content extracted from URL."
+        return content[:6000]
+    except Exception as e:
+        return f"Could not fetch URL (site may block scrapers): {str(e)}"
  
 @tool
 def run_python(code: str) -> str:
